@@ -57,7 +57,7 @@ export class XrCollider {
 		 * Must be call in all frames
 		 */
 		update() {
-			this.object.getWorldPosition(this.worldPosition);
+			this.object.getWorldPosition(this.worldPosition, "palm");
 			
 			this.targets.forEach(target => {
 				const targetPosition = new THREE.Vector3();

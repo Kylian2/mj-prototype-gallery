@@ -146,7 +146,7 @@ export function createPanel(config) {
         width = 1.2,
         height = 0.8,
         title = "Title",
-        content = "Panel content",
+        content = "",
         position = new THREE.Vector3(0, 1.5, -1),
         rotation = new THREE.Euler(0, 0, 0),
         fontSize = 0.05,
