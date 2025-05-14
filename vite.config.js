@@ -4,6 +4,7 @@ import path from 'path'
 
 export default defineConfig(({ command }) => {
 	const config = {
+		base: '/mj-prototype-gallery/',
     	server: {
         	host: '0.0.0.0', 
         	port: 8080
