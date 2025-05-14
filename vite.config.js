@@ -1,14 +1,24 @@
-import { defineConfig } from 'vite';
-import path from "node:path";
-import fs from 'fs';
+import { defineConfig } from 'vite'
+import fs from 'fs'
+import path from 'path'
 
-export default defineConfig({
-    server: {
-        https: {
-            key: fs.readFileSync(path.resolve(__dirname, 'key.pem')),
-            cert: fs.readFileSync(path.resolve(__dirname, 'cert.pem'))
-        },
-        host: '0.0.0.0', 
-        port: 8080
-    }
-});
+export default defineConfig(({ command }) => {
+	const config = {
+    	server: {
+        	host: '0.0.0.0', 
+        	port: 8080
+    	}	
+	}
+
+	if (command === 'serve') {
+		config.server = {
+			https: {
+				key: fs.readFileSync(path.resolve(__dirname, 'key.pem')),
+				cert: fs.readFileSync(path.resolve(__dirname, 'cert.pem'))
+			},
+			host: '0.0.0.0', 
+			port: 8080
+		}
+	}
+	return config
+})
