@@ -725,6 +725,22 @@ export class XrInput {
         this.context = undefined;
     }
 
+    emptyColliders(){
+        if(this._leftHandController){
+            this._leftHandController.collider.targets = [];
+            this._leftHandController._pointerTargets = [];
+            this._leftHandController._colliderTargetBuffer = [];
+            this._leftColliderBuffer = [];
+        }
+
+         if(this._rightHandController){
+            this._rightHandController.collider.targets = [];
+            this._rightHandController._pointerTargets = [];
+            this._rightHandController._colliderTargetBuffer = [];
+            this._rightColliderBuffer = [];
+        }
+    }
+
     /**
      * Create new pointers, usefull when moving to a new scene
      */

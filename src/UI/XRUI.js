@@ -13,6 +13,7 @@ import ThreeMeshUI from 'three-mesh-ui';
  * @param {THREE.Color} [options.hoverColor=new THREE.Color(0x7353ff)] - Color when hovered
  * @param {THREE.Color} [options.selectedColor=new THREE.Color(0x9376ff)] - Color when selected/clicked
  * @param {THREE.Vector3} [options.position=new THREE.Vector3(0, 1.5, -1)] - Position of the button
+ * @param {THREE.Vector3} [options.position=new THREE.Euler(0, 0, 0)] - Rotation of the button
  * @param {Function} [options.callback=() => console.log("Button clicked!")] - Function to execute when button is clicked
  * @returns {ThreeMeshUI.Block} - The created button object
  */
@@ -26,6 +27,7 @@ export function createButton(options = {}) {
         hoverColor = new THREE.Color(0x7353ff),
         selectedColor = new THREE.Color(0x9376ff),
         position = new THREE.Vector3(0, 1.5, -1),
+        rotation = new THREE.Euler(0, 0, 0),
         callback = () => console.log("Button clicked!")
     } = options;
 
@@ -56,6 +58,7 @@ export function createButton(options = {}) {
     });
     button.add(buttonText);
     button.position.copy(position);
+    button.rotation.set(rotation.x, rotation.y, rotation.z);
 
     const darkenColor = (color, factor = 0.2) => {
         const darkerColor = color.clone();

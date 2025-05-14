@@ -5,7 +5,7 @@ import { Reflector } from 'three/addons/objects/Reflector.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import { XrInput } from './XRControls/xrInput';
 import ThreeMeshUI from 'three-mesh-ui';
-import { createPanel, createButton } from './XRControls/XRUI.js';
+import { createPanel, createButton } from './UI/XRUI.js';
 
 /**
  * The root of the Three.JS example, this context is used to setup and
@@ -52,7 +52,7 @@ export class Context {
         this.renderer.setAnimationLoop(() => this.onAnimate());
     }
 
-    buildHomeScene() {
+    buildHomeScene(reload = false) {
         let scene = new THREE.Scene();
         scene.background = new THREE.Color(0x333333);
 
@@ -204,6 +204,9 @@ export class Context {
         const xr = this.renderer.xr;
         this.xrInput.setupController(0, xr);
         this.xrInput.setupController(1, xr);
+        if(reload){
+            this.xrInput.recreatePointers();
+        }
         this.xrInput.setFlyingMode(false);
 
         this.xrInput.addColliderTarget(buttons);
@@ -360,6 +363,18 @@ export class Context {
         scene.add(button10);
         buttons.push(button10);
 
+        const homeButton = createButton({
+            text: "Back to home",
+            position: new THREE.Vector3(0, 1, 2),
+            rotation: new THREE.Vector3(0, Math.PI, 0),
+            backgroundColor: new THREE.Color(0x9CC69B),
+            callback: () => {
+                this.changeScene('home');
+            }
+        }); 
+        scene.add(homeButton);
+        buttons.push(homeButton);
+
         this.scene = scene;
         this.addGridAndLight();
 
@@ -442,10 +457,11 @@ export class Context {
      */
     changeScene(scene) {
         this.cleanupCurrentScene();
-        
+        this.xrInput.emptyColliders();
+
         switch(scene) {
             case 'home':
-                this.buildHomeScene();
+                this.buildHomeScene(true);
                 break;
             case 'movement':
                 this.buildMovementScene();
@@ -480,6 +496,8 @@ export class Context {
         }
 
         this.renderer.setAnimationLoop(() => this.onAnimate());
+
+        console.log(this.xrInput.getLeftController());
     }
 
     /**
