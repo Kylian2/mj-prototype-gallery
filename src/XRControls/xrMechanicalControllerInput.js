@@ -95,6 +95,14 @@ export class XrMechanicalControllerInput {
         return this._pointerWDirection;
     }   
 
+    /**
+     * Returns the world position of the palm
+     */
+    get PalmWPosition() {
+        this.refresh();
+        return this._pointerWDirection;
+    }
+
     /*
      * Apply haptic feedback to the controller (vibrate)
      */
@@ -171,6 +179,26 @@ export class XrMechanicalControllerInput {
         this._localRotation.invert();
         this._localRotation.multiply(this._worldRotation);
 
+        // Calculate palm position based on wrist position and rotation
+        // We need to initialize this._palmWorldPosition in the constructor if not already there
+        if (!this._palmWorldPosition) {
+            this._palmWorldPosition = new THREE.Vector3();
+        }
+        
+        // Create palm offset - different for each hand
+        const palmOffset = new THREE.Vector3();
+        if (this._handSide == 'left') {
+            palmOffset.set(0.01, 0.0, 0.05); // Offset for left palm from wrist
+        } else {
+            palmOffset.set(-0.01, 0.0, 0.05); // Offset for right palm from wrist
+        }
+        
+        // Apply world rotation to palm offset
+        palmOffset.applyQuaternion(this._worldRotation);
+        
+        // Set palm position (wrist position + rotated offset)
+        this._palmWorldPosition.copy(this._worldPosition).add(palmOffset);
+        
         // Pointer 
         this._grip.getWorldPosition(this._pointerWOrigin.setScalar(0));
         this._pointerWDirection.set(0,-1,-1).normalize() ; // Forward
@@ -206,7 +234,7 @@ export class XrMechanicalControllerInput {
             object: this,
             targets: [],
             radius: 0.05,
-            debug: true,
+            debug: false,
             scene: this.context.scene
         });
     }
@@ -266,8 +294,14 @@ export class XrMechanicalControllerInput {
         this._onPointing = callback;
     }
 
-    getWorldPosition(target){
-        return target.copy(this.pointerWOrigin);
+    getWorldPosition(target, where = "pointer"){
+        if(where === 'pointer'){
+            return target.copy(this.pointerWOrigin);
+        }else if(where === 'wrist'){
+            return target.copy(this.wristWPos);
+        }else if(where === 'palm'){
+            return 
+        }   
     }
 
     /**
