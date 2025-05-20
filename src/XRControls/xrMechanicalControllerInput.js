@@ -19,6 +19,7 @@ export class XrMechanicalControllerInput {
         this._gamePad = gamePad ;
         this._handSide = handSide ;
         this._wristAxis = new THREE.AxesHelper(0.1)
+        this._palmAxis = new THREE.AxesHelper(0.1)
 
         this.select = false ;
         this.squeeze = false ;
@@ -47,6 +48,8 @@ export class XrMechanicalControllerInput {
         this._colliderTargetBuffer = [];
         this._pointerTargets = [];
         this._onPointing = undefined;
+
+        this._palmWorldPosition = new THREE.Vector3();
         this.setUpCollider();
     }
 
@@ -131,16 +134,20 @@ export class XrMechanicalControllerInput {
      */
     onConnect() {       
         this.context.scene.add(this._wristAxis); 
+        this.context.scene.add(this._palmAxis);
     }
 
     /**
      * Called on each animation frame
      */
     onAnimate() {  
-        this._wristAxis.position.copy(this.wristWPos) ;   
-        this._wristAxis.quaternion.copy(this.wristWQuat) ;  
+        this._wristAxis.position.copy(this.wristWPos);   
+        this._wristAxis.quaternion.copy(this.wristWQuat);  
         this.collider.update(); 
         this.raycast(this._pointerTargets);
+        
+        this._palmAxis.position.copy(this._palmWorldPosition);
+        this._palmAxis.quaternion.copy(this.wristWQuat);
     }
 
     /**
@@ -148,6 +155,7 @@ export class XrMechanicalControllerInput {
      */
     onDisconnect() {
         this._wristAxis?.removeFromParent(); 
+        this._palmAxis?.removeFromParent();
     }
 
     /*
@@ -202,9 +210,9 @@ export class XrMechanicalControllerInput {
         // Create palm offset - different for each hand
         const palmOffset = new THREE.Vector3();
         if (this._handSide == 'left') {
-            palmOffset.set(0.01, 0.0, 0.05); // Offset for left palm from wrist
+            palmOffset.set(0.03, -0.02, -0.05); // Offset for left palm from wrist
         } else {
-            palmOffset.set(-0.01, 0.0, 0.05); // Offset for right palm from wrist
+            palmOffset.set(-0.03, -0.02, -0.05); // Offset for right palm from wrist
         }
         
         // Apply world rotation to palm offset
@@ -212,7 +220,7 @@ export class XrMechanicalControllerInput {
         
         // Set palm position (wrist position + rotated offset)
         this._palmWorldPosition.copy(this._worldPosition).add(palmOffset);
-        
+
         // Pointer 
         this._grip.getWorldPosition(this._pointerWOrigin.setScalar(0));
         this._pointerWDirection.set(0,-1,-1).normalize() ; // Forward
@@ -308,7 +316,10 @@ export class XrMechanicalControllerInput {
         this._onPointing = callback;
     }
 
-    getWorldPosition(target){
+    getWorldPosition(target, pos = ""){
+        if(pos === 'palm'){
+            return target.copy(this._palmWorldPosition)
+        }
         return target.copy(this.pointerWOrigin);
     }
 
@@ -371,6 +382,24 @@ export class XrMechanicalControllerInput {
             }
             
             this._wristAxis = null;
+        }
+        
+        // Also dispose of _palmAxis
+        if (this._palmAxis) {
+            this._palmAxis.removeFromParent();
+            
+            if (this._palmAxis.geometry) {
+                this._palmAxis.geometry.dispose();
+            }
+            if (this._palmAxis.material) {
+                if (Array.isArray(this._palmAxis.material)) {
+                    this._palmAxis.material.forEach(material => material.dispose());
+                } else {
+                    this._palmAxis.material.dispose();
+                }
+            }
+            
+            this._palmAxis = null;
         }
         
         // Dispose of the collider if it exists

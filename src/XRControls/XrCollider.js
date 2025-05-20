@@ -63,23 +63,25 @@ export class XrCollider {
 				const targetPosition = new THREE.Vector3();
 				target.getWorldPosition(targetPosition);
 
-				if (geometry instanceof THREE.BoxGeometry) {
-					console.log("C'est une BoxGeometry");
-				}else{
-					console.log("c'est autre chose");
-				}
-				
-				const distance = this.worldPosition.distanceTo(targetPosition);
-				
+				let isColliding = false;
+
 				if (!target.colliderRadius) {
 					target.colliderRadius = this._calculateRadius(target);
 				}
+
+				if (target.geometry instanceof THREE.BoxGeometry) {
+					isColliding =
+						Math.abs(target.position.x - this.worldPosition.x) <= target.colliderRadius &&
+						Math.abs(target.position.y - this.worldPosition.y) <= target.colliderRadius &&
+						Math.abs(target.position.z - this.worldPosition.z) <= target.colliderRadius;
+				}else{
+					const distance = this.worldPosition.distanceTo(targetPosition);
 				
-				const collisionDistance = this.radius + target.colliderRadius;
-				
+					const collisionDistance = this.radius + target.colliderRadius;
+					isColliding = distance < collisionDistance;
+				}
+			
 				const wasColliding = this.collisions.get(target) || false;
-				
-				const isColliding = distance < collisionDistance;
 
 		if (isColliding !== wasColliding) {
 						this.collisions.set(target, isColliding);
