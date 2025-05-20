@@ -24,8 +24,6 @@ export function createButton(options = {}) {
         height = 0.15,
         fontSize = 0.05,
         backgroundColor = new THREE.Color(0x5d3fd3),
-        hoverColor = new THREE.Color(0x7353ff),
-        selectedColor = new THREE.Color(0x9376ff),
         position = new THREE.Vector3(0, 1.5, -1),
         rotation = new THREE.Euler(0, 0, 0),
         callback = () => console.log("Button clicked!")
@@ -54,7 +52,7 @@ export function createButton(options = {}) {
     const buttonText = new ThreeMeshUI.Text({
         content: text,
         fontSize: fontSize,
-        fontColor: new THREE.Color(0xffffff)
+        fontColor: new THREE.Color(0xffffff),
     });
     button.add(buttonText);
     button.position.copy(position);
@@ -120,7 +118,7 @@ export function createButton(options = {}) {
             button.userData.currentColor = new THREE.Color(0xd62828);
         }
     });
-
+    button.backgroundMaterial.side = THREE.DoubleSide;
     return button;
 }
 
@@ -165,7 +163,7 @@ export function createPanel(config) {
         fontFamily: 'https://unpkg.com/three-mesh-ui/examples/assets/Roboto-msdf.json',
         fontTexture: 'https://unpkg.com/three-mesh-ui/examples/assets/Roboto-msdf.png',
         backgroundColor: backgroundColor,
-        backgroundOpacity: 0.9
+        backgroundOpacity: 0.9,
     });
 
     const titleBlock = new ThreeMeshUI.Block({
@@ -173,14 +171,14 @@ export function createPanel(config) {
         height: 0.15,
         justifyContent: 'center',
         backgroundColor: new THREE.Color(0x34495e),
-        marginBottom: 0.05
+        marginBottom: 0.05,
     });
 
     titleBlock.add(
         new ThreeMeshUI.Text({
             content: title,
             fontSize: fontSize * 1.2,
-            fontColor: new THREE.Color(textColor)
+            fontColor: new THREE.Color(textColor),
         })
     );
 
@@ -189,14 +187,14 @@ export function createPanel(config) {
         height: height - 0.3 - (buttons.length > 0 ? 0.15 : 0), // Adjust height if buttons exist
         textAlign: 'left',
         justifyContent: 'start',
-        padding: 0.03
+        padding: 0.03,
     });
 
     contentBlock.add(
         new ThreeMeshUI.Text({
             content: content,
             fontSize: fontSize,
-            fontColor: new THREE.Color(textColor)
+            fontColor: new THREE.Color(textColor),
         })
     );
 
@@ -213,7 +211,7 @@ export function createPanel(config) {
             backgroundColor: new THREE.Color(backgroundColor),
             backgroundOpacity: 0.0, // Transparent 
             margin: 0.05,
-            padding: 0.02
+            padding: 0.02,
         });
 
         buttons.forEach((buttonConfig, index) => {
@@ -227,7 +225,7 @@ export function createPanel(config) {
                 alignItems: 'center',
                 borderRadius: 0.025,
                 backgroundColor: buttonConfig.backgroundColor || new THREE.Color(0x5d3fd3),
-                margin: 0.01
+                margin: 0.01,
             });
 
             const buttonText = new ThreeMeshUI.Text({
@@ -285,6 +283,8 @@ export function createPanel(config) {
     panel.rotation.copy(rotation);
     
     panel.userData.buttons = UIButtons;
+
+    panel.backgroundMaterial.side = THREE.DoubleSide;
 
     return panel;
 }

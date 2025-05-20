@@ -30,6 +30,7 @@ export class XrMechanicalControllerInput {
         this.buttonA = false;
         this.buttonB = false;
         this.hasHand = false ;
+        this.trigger = false ;
 
         this._localPosition = new THREE.Vector3();
         this._localRotation = new THREE.Quaternion();
@@ -39,6 +40,8 @@ export class XrMechanicalControllerInput {
         this._pointerWOrigin = new THREE.Vector3();
         this._pointerWDirection = new THREE.Vector3();
         this._lastUpdate = -1;
+
+        this._lastPosition = new THREE.Vector3();
 
         this.collider = undefined;
         this._colliderTargetBuffer = [];
@@ -101,6 +104,17 @@ export class XrMechanicalControllerInput {
     get PalmWPosition() {
         this.refresh();
         return this._pointerWDirection;
+    }
+
+    getSpeed(){
+
+        const now = this.wristWPos;
+        const last = new THREE.Vector3();
+        last.copy(this._lastPosition);
+        const distance = now.distanceTo(last)/this.context.deltaTime;
+        this._lastPosition.copy(now);
+        return distance;
+
     }
 
     /*
@@ -294,14 +308,8 @@ export class XrMechanicalControllerInput {
         this._onPointing = callback;
     }
 
-    getWorldPosition(target, where = "pointer"){
-        if(where === 'pointer'){
-            return target.copy(this.pointerWOrigin);
-        }else if(where === 'wrist'){
-            return target.copy(this.wristWPos);
-        }else if(where === 'palm'){
-            return 
-        }   
+    getWorldPosition(target){
+        return target.copy(this.pointerWOrigin);
     }
 
     /**
