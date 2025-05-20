@@ -1091,10 +1091,9 @@ export class Context {
         this.addGridAndLight();
                 
         const animate = () => {
-            this.onAnimate();
             updateSpeed();
-            
             updateBall(this.deltaTime);
+            this.onAnimate();
         };
 
         this.renderer.setAnimationLoop(animate);
@@ -1107,7 +1106,7 @@ export class Context {
         this.xrInput.addColliderTarget(ball);
 
         const handleRightHand = () => {
-            if (this.xrInput.getRightController().trigger && !ball.userData.isGrabbed && !ball.userData.isLaunched) {
+            if (this.xrInput.getRightController().trigger && !ball.userData.isGrabbed) {
                 ball.userData.isGrabbed = true;
                 ball.userData.controller = this.xrInput.getRightController();
                 this.xrInput.getRightController().getWorldPosition(ball.userData.lastPosition);
@@ -1122,7 +1121,7 @@ export class Context {
         }
 
         const handleLeftHand = () => {
-            if (this.xrInput.getLeftController().trigger && !ball.userData.isGrabbed && !ball.userData.isLaunched) {
+            if (this.xrInput.getLeftController().trigger && !ball.userData.isGrabbed) {
                 ball.userData.isGrabbed = true;
                 ball.userData.controller = this.xrInput.getLeftController();
                 this.xrInput.getLeftController().getWorldPosition(ball.userData.lastPosition);
