@@ -57,11 +57,17 @@ export class XrCollider {
 		 * Must be call in all frames
 		 */
 		update() {
-			this.object.getWorldPosition(this.worldPosition, "palm");
+			this.object.getWorldPosition(this.worldPosition);
 			
 			this.targets.forEach(target => {
 				const targetPosition = new THREE.Vector3();
 				target.getWorldPosition(targetPosition);
+
+				if (geometry instanceof THREE.BoxGeometry) {
+					console.log("C'est une BoxGeometry");
+				}else{
+					console.log("c'est autre chose");
+				}
 				
 				const distance = this.worldPosition.distanceTo(targetPosition);
 				

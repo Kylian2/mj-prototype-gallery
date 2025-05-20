@@ -44,7 +44,7 @@ export class Context {
         this.renderer.xr.enabled = true;
         this.xrInput = new XrInput(this);
 
-        this.buildHomeScene();
+        buildHomeScene(this);
 
         this.frame = 0;
         this.elapsedTime = 0;
