@@ -255,7 +255,7 @@ export class XrMechanicalControllerInput {
         this.collider = new XrCollider({
             object: this,
             targets: [],
-            radius: 0.05,
+            radius: 0.001,
             debug: false,
             scene: this.context.scene
         });

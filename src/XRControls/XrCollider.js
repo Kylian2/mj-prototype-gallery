@@ -45,7 +45,7 @@ export class XrCollider {
 		_calculateRadius(object) {
 
 			const box = new THREE.Box3().setFromObject(object);
-			if (box.isEmpty()) return 0.1; // default value
+			if (box.isEmpty()) return 0.001; // default value
 			
 			const size = box.getSize(new THREE.Vector3());
 			return Math.max(size.x, size.y, size.z) / 2;
@@ -57,7 +57,7 @@ export class XrCollider {
 		 * Must be call in all frames
 		 */
 		update() {
-			this.object.getWorldPosition(this.worldPosition);
+			this.object.getWorldPosition(this.worldPosition, 'palm');
 			
 			this.targets.forEach(target => {
 				const targetPosition = new THREE.Vector3();
