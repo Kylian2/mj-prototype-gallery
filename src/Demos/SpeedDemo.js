@@ -81,6 +81,7 @@ export function buildSpeedScene(context){
     });
     scene.add(panelBlock2);
 
+    let balls = []
     const desk = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
         new THREE.MeshStandardMaterial({ color: new THREE.Color(0x020202) }));
@@ -97,8 +98,10 @@ export function buildSpeedScene(context){
     );
     ball.position.set(2, 0.8, 0);
     scene.add(ball);
-    
+    balls.push(ball);
+
     ball.userData = {
+        type: 'BALL',
         isGrabbed: false,
         velocity: new THREE.Vector3(0, 0, 0),
         gravity: 9.8,
@@ -108,7 +111,8 @@ export function buildSpeedScene(context){
         isLaunched: false,
         isTracking: false,
         controller: null,
-        distanceTraveled: 0
+        distanceTraveled: 0, 
+        display: true
     };
 
     let distancePanel;
@@ -128,7 +132,7 @@ export function buildSpeedScene(context){
         scene.add(distancePanel);
     };
     
-    const updateBall = (deltaTime) => {
+    const updateBall = (ball, deltaTime) => {
         if (ball.userData.isGrabbed && ball.userData.controller) {
             const controller = ball.userData.controller;
             controller.getWorldPosition(ball.position);
@@ -157,7 +161,9 @@ export function buildSpeedScene(context){
                     ball.userData.distanceTraveled = Math.sqrt(dx * dx + dz * dz);
                     
                     //updateDistanceDisplay(ball.userData.launchPosition.distanceTo(ball.userData.landingPosition));
-                    updateDistanceDisplay(ball.userData.distanceTraveled);
+                    if(ball.userData.display === true){
+                        updateDistanceDisplay(ball.userData.distanceTraveled);
+                    }
                 }
             }
         
@@ -181,8 +187,27 @@ export function buildSpeedScene(context){
                 }
             }
         } else {
-            if (ball.position.y < 0.1) {
+            if (ball.position.y <= 0.1) {
                 ball.position.y = 0.1;
+                if(ball.userData.initialPosition){
+                    ball.position.copy(ball.userData.initialPosition);
+                    ball.userData = {
+                        type: 'BALL',
+                        isGrabbed: false,
+                        velocity: new THREE.Vector3(0, 0, 0),
+                        gravity: 6.8,
+                        lastPosition: new THREE.Vector3(),
+                        launchPosition: null,
+                        landingPosition: null,
+                        initialPosition: ball.userData.initialPosition,
+                        isLaunched: false,
+                        isTracking: false,
+                        controller: null,
+                        distanceTraveled: 0, 
+                        display: false
+                    };
+                    console.log(ball)
+                }
             }
         }
     };
@@ -206,6 +231,42 @@ export function buildSpeedScene(context){
     scene.add(resetButton);
     buttons.push(resetButton);
 
+    const desk2 = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 1, 0.5),
+    new THREE.MeshStandardMaterial({ color: new THREE.Color(0x020202) }));
+    desk2.position.set(-3, 0, 0);
+    desk2.rotation.set(0, Math.PI/2, 0);
+    scene.add(desk2);
+
+    for(let i = 0; i < 3; i++){
+        const ball = new THREE.Mesh(
+            new THREE.SphereGeometry(0.1, 16, 16),
+            new THREE.MeshStandardMaterial({ 
+                color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+                roughness: 0.7,
+                metalness: 0.2
+            })
+        );
+        ball.position.set(-3, 0.6, -1 + i);
+        ball.userData = {
+            type: 'BALL',
+            isGrabbed: false,
+            velocity: new THREE.Vector3(0, 0, 0),
+            gravity: 6.8,
+            lastPosition: new THREE.Vector3(),
+            launchPosition: null,
+            landingPosition: null,
+            initialPosition: new THREE.Vector3(-3, 0.6, -1 + i),
+            isLaunched: false,
+            isTracking: false,
+            controller: null,
+            distanceTraveled: 0, 
+            display: false
+        };
+        scene.add(ball);
+        balls.push(ball)
+    }
+
     const homeButton = createButton({
         text: "Back to home",
         position: new THREE.Vector3(0, 1, 2),
@@ -223,7 +284,7 @@ export function buildSpeedScene(context){
             
     const animate = () => {
         updateSpeed();
-        updateBall(context.deltaTime);
+        balls.forEach((ball)=> updateBall(ball, context.deltaTime))
         context.onAnimate();
     };
 
@@ -234,35 +295,37 @@ export function buildSpeedScene(context){
     context.xrInput.setupController(1, xr);
     context.xrInput.recreatePointers();
     context.xrInput.addColliderTarget(buttons);
-    context.xrInput.addColliderTarget(ball);
+    context.xrInput.addColliderTarget(balls);
 
-    const handleRightHand = () => {
-        if (context.xrInput.getRightController().trigger && !ball.userData.isGrabbed) {
-            ball.userData.isGrabbed = true;
-            ball.userData.controller = context.xrInput.getRightController();
-            context.xrInput.getRightController().getWorldPosition(ball.userData.lastPosition);
-        } 
-        else if (!context.xrInput.getRightController().trigger && ball.userData.isGrabbed && ball.userData.controller === context.xrInput.getRightController()) {
-            ball.userData.isGrabbed = false;
-            ball.userData.isLaunched = true;
-            ball.userData.isTracking = true;
-            ball.userData.launchPosition = ball.position.clone();
-            console.log(`Ball launched from position: ${ball.userData.launchPosition.x.toFixed(2)}, ${ball.userData.launchPosition.y.toFixed(2)}, ${ball.userData.launchPosition.z.toFixed(2)}`);
+    const handleRightHand = (target) => {
+        if(target.userData.type === 'BALL'){
+            if (context.xrInput.getRightController().trigger && !target.userData.isGrabbed) {
+                target.userData.isGrabbed = true;
+                target.userData.controller = context.xrInput.getRightController();
+                context.xrInput.getRightController().getWorldPosition(target.userData.lastPosition);
+            } 
+            else if (!context.xrInput.getRightController().trigger && target.userData.isGrabbed && target.userData.controller === context.xrInput.getRightController()) {
+                target.userData.isGrabbed = false;
+                target.userData.isLaunched = true;
+                target.userData.isTracking = true;
+                target.userData.launchPosition = target.position.clone();
+            }
         }
     }
 
-    const handleLeftHand = () => {
-        if (context.xrInput.getLeftController().trigger && !ball.userData.isGrabbed) {
-            ball.userData.isGrabbed = true;
-            ball.userData.controller = context.xrInput.getLeftController();
-            context.xrInput.getLeftController().getWorldPosition(ball.userData.lastPosition);
-        } 
-        else if (!context.xrInput.getLeftController().trigger && ball.userData.isGrabbed && ball.userData.controller === context.xrInput.getLeftController()) {
-            ball.userData.isGrabbed = false;
-            ball.userData.isLaunched = true;
-            ball.userData.isTracking = true;
-            ball.userData.launchPosition = ball.position.clone();
-            console.log(`Ball launched from position: ${ball.userData.launchPosition.x.toFixed(2)}, ${ball.userData.launchPosition.y.toFixed(2)}, ${ball.userData.launchPosition.z.toFixed(2)}`);
+    const handleLeftHand = (target) => {
+        if(target.userData.type === 'BALL'){
+            if (context.xrInput.getLeftController().trigger && !target.userData.isGrabbed) {
+                target.userData.isGrabbed = true;
+                target.userData.controller = context.xrInput.getLeftController();
+                context.xrInput.getLeftController().getWorldPosition(target.userData.lastPosition);
+            } 
+            else if (!context.xrInput.getLeftController().trigger && target.userData.isGrabbed && target.userData.controller === context.xrInput.getLeftController()) {
+                target.userData.isGrabbed = false;
+                target.userData.isLaunched = true;
+                target.userData.isTracking = true;
+                target.userData.launchPosition = target.position.clone();
+            }
         }
     }
 
