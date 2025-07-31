@@ -64,7 +64,7 @@ export function buildColliderScene(context){
     scene.add(panelBlock);
 
     const block1 = new THREE.Mesh(
-        new THREE.BoxGeometry(0.4, 0.4, 0.4),
+        new THREE.SphereGeometry(0.25, 32, 32),
         new THREE.MeshBasicMaterial({ color: 0x8B786D })
     );
     block1.position.set(4, 0.7, -0.4);
@@ -73,7 +73,7 @@ export function buildColliderScene(context){
     context.xrInput.addColliderTarget(block1);
 
     const block2 = new THREE.Mesh(
-        new THREE.BoxGeometry(0.4, 0.4, 0.4),
+        new THREE.SphereGeometry(0.25, 32, 32),
         new THREE.MeshBasicMaterial({ color: 0x8B786D })
     );
     block2.position.set(4, 0.7, 0.4);
@@ -119,7 +119,7 @@ export function buildColliderScene(context){
     context.xrInput.setJump(false);
     context.xrInput.setFlyingMode(true);
     context.xrInput.addColliderTarget(buttons);
-    context.xrInput.setOnPointing((target) => {
+    context.xrInput?.setOnPointing((target) => {
         if (target && target.isUI) {
             if (context.xrInput.getRightController().trigger) {
                 target.setState('selected');
@@ -129,7 +129,7 @@ export function buildColliderScene(context){
         }
     });
 
-    context.xrInput?.getRightController().setOnColliderEnter((target) => {
+    context.xrInput?.getRightController()?.setOnColliderEnter((target) => {
         if(target?.userData.id === 'SPHR1'){
             if(target.userData.inGame === true){
                 if(context.clock.getElapsedTime()-target.userData.startTime >= 20){
@@ -169,7 +169,7 @@ export function buildColliderScene(context){
         }
     });
 
-    context.xrInput?.getRightController().setOnColliderStay((target) => {
+    context.xrInput?.getRightController()?.setOnColliderStay((target) => {
         if(target?.userData.id === "BLOCK2" || target?.userData.id === "SPHR2"){
             if(context.xrInput.getRightController().trigger){
                 target.material.color = R_STAY_COLOR;
@@ -179,7 +179,7 @@ export function buildColliderScene(context){
         }
     });
 
-    context.xrInput?.getRightController().setOnColliderExit((target) => {
+    context.xrInput?.getRightController()?.setOnColliderExit((target) => {
         if(target?.userData.id === "BLOCK2" || target?.userData.id === "SPHR2"){
             target.material.color = R_EXIT_COLOR;
             //target.scale.set(1, 1, 1);
@@ -187,14 +187,14 @@ export function buildColliderScene(context){
     });
 
 
-    context.xrInput?.getLeftController().setOnColliderEnter((target) => {
+    context.xrInput?.getLeftController()?.setOnColliderEnter((target) => {
         if(target?.userData.id === "BLOCK1" || target?.userData.id === "SPHR2"){
             target.material.color = L_ENTER_COLOR;
             //target.scale.set(1.1, 1.1, 1.1);
         }
     });
 
-    context.xrInput?.getLeftController().setOnColliderStay((target) => {
+    context.xrInput?.getLeftController()?.setOnColliderStay((target) => {
         if(target?.userData.id === "BLOCK1" || target?.userData.id === "SPHR2"){
             if(context.xrInput.getLeftController().trigger){
                 target.material.color = L_STAY_COLOR;
@@ -204,7 +204,7 @@ export function buildColliderScene(context){
         }
     });
 
-    context.xrInput?.getLeftController().setOnColliderExit((target) => {
+    context.xrInput?.getLeftController()?.setOnColliderExit((target) => {
         if(target?.userData.id === "BLOCK1" || target?.userData.id === "SPHR2"){
             target.material.color = L_EXIT_COLOR;
             //target.scale.set(1, 1, 1);

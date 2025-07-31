@@ -59,8 +59,8 @@ export class Context {
     addGridAndLight() {
         const gridHelper = new THREE.GridHelper(10, 10);
         this.scene.add(gridHelper);
-        const axesHelper = new THREE.AxesHelper(10, 10);
-        this.scene.add(axesHelper);
+       // const axesHelper = new THREE.AxesHelper(10, 10);
+       // this.scene.add(axesHelper);
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
         directionalLight.position.set(10, 10, -10);

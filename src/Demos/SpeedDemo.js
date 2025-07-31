@@ -301,10 +301,10 @@ export function buildSpeedScene(context){
         if(target.userData.type === 'BALL'){
             if (context.xrInput.getRightController().trigger && !target.userData.isGrabbed) {
                 target.userData.isGrabbed = true;
-                target.userData.controller = context.xrInput.getRightController();
-                context.xrInput.getRightController().getWorldPosition(target.userData.lastPosition);
+                target.userData.controller = context.xrInput?.getRightController();
+                context.xrInput?.getRightController()?.getWorldPosition(target.userData.lastPosition);
             } 
-            else if (!context.xrInput.getRightController().trigger && target.userData.isGrabbed && target.userData.controller === context.xrInput.getRightController()) {
+            else if (!context.xrInput?.getRightController().trigger && target.userData.isGrabbed && target.userData.controller === context.xrInput?.getRightController()) {
                 target.userData.isGrabbed = false;
                 target.userData.isLaunched = true;
                 target.userData.isTracking = true;
@@ -315,12 +315,12 @@ export function buildSpeedScene(context){
 
     const handleLeftHand = (target) => {
         if(target.userData.type === 'BALL'){
-            if (context.xrInput.getLeftController().trigger && !target.userData.isGrabbed) {
+            if (context.xrInput?.getLeftController().trigger && !target.userData.isGrabbed) {
                 target.userData.isGrabbed = true;
-                target.userData.controller = context.xrInput.getLeftController();
-                context.xrInput.getLeftController().getWorldPosition(target.userData.lastPosition);
+                target.userData.controller = context.xrInput?.getLeftController();
+                context.xrInput?.getLeftController()?.getWorldPosition(target.userData.lastPosition);
             } 
-            else if (!context.xrInput.getLeftController().trigger && target.userData.isGrabbed && target.userData.controller === context.xrInput.getLeftController()) {
+            else if (!context.xrInput?.getLeftController().trigger && target.userData.isGrabbed && target.userData.controller === context.xrInput?.getLeftController()) {
                 target.userData.isGrabbed = false;
                 target.userData.isLaunched = true;
                 target.userData.isTracking = true;
@@ -329,9 +329,9 @@ export function buildSpeedScene(context){
         }
     }
 
-    context.xrInput.getRightController().setOnColliderEnter(handleRightHand);
-    context.xrInput.getRightController().setOnColliderStay(handleRightHand);
+    context.xrInput?.getRightController()?.setOnColliderEnter(handleRightHand);
+    context.xrInput?.getRightController()?.setOnColliderStay(handleRightHand);
 
-    context.xrInput.getLeftController().setOnColliderEnter(handleLeftHand);
-    context.xrInput.getLeftController().setOnColliderStay(handleLeftHand);
+    context.xrInput?.getLeftController()?.setOnColliderEnter(handleLeftHand);
+    context.xrInput?.getLeftController()?.setOnColliderStay(handleLeftHand);
 }
